@@ -1,0 +1,97 @@
+From 52a4fdbae5eba85ca1caa60812d608f947d1ddcc Mon Sep 17 00:00:00 2001
+From: Christopher Villalobos <christopher.villalobos@gmail.com>
+Date: Fri, 17 Sep 2021 13:56:14 -0400
+Subject: [PATCH 1/3] Change modifier to MOD4
+
+---
+ config.def.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/config.def.h b/config.def.h
+index a2ac963..7c1d880 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -45,7 +45,7 @@ static const Layout layouts[] = {
+ };
+ 
+ /* key definitions */
+-#define MODKEY Mod1Mask
++#define MODKEY Mod4Mask
+ #define TAGKEYS(KEY,TAG) \
+ 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
+ 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
+-- 
+2.31.1
+
+
+From 96ce0d5b7abbc64d2ce872774ad4bb3f6997a013 Mon Sep 17 00:00:00 2001
+From: Christopher Villalobos <christopher.villalobos@gmail.com>
+Date: Fri, 17 Sep 2021 13:57:06 -0400
+Subject: [PATCH 2/3] Remove Firefox rule
+
+---
+ config.def.h | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/config.def.h b/config.def.h
+index 7c1d880..3a5f56f 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -28,7 +28,6 @@ static const Rule rules[] = {
+ 	 */
+ 	/* class      instance    title       tags mask     isfloating   monitor */
+ 	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
+-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+ };
+ 
+ /* layout(s) */
+-- 
+2.31.1
+
+
+From d8ac587be964f7aeae8c4438958cdccae0f9a97b Mon Sep 17 00:00:00 2001
+From: Christopher Villalobos <christopher.villalobos@gmail.com>
+Date: Fri, 17 Sep 2021 13:59:48 -0400
+Subject: [PATCH 3/3] Move to rofi
+
+---
+ config.def.h | 5 ++---
+ dwm.c        | 2 --
+ 2 files changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/config.def.h b/config.def.h
+index 3a5f56f..e9937f9 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -55,13 +55,12 @@ static const Layout layouts[] = {
+ #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+ 
+ /* commands */
+-static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
+-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
++static const char *roficmd[] = { "rofi", "-show", "run", NULL };
+ static const char *termcmd[]  = { "st", NULL };
+ 
+ static Key keys[] = {
+ 	/* modifier                     key        function        argument */
+-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
++	{ MODKEY,                       XK_p,      spawn,          {.v = roficmd } },
+ 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
+ 	{ MODKEY,                       XK_b,      togglebar,      {0} },
+ 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
+diff --git a/dwm.c b/dwm.c
+index 5e4d494..76740b1 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -1640,8 +1640,6 @@ sigchld(int unused)
+ void
+ spawn(const Arg *arg)
+ {
+-	if (arg->v == dmenucmd)
+-		dmenumon[0] = '0' + selmon->num;
+ 	if (fork() == 0) {
+ 		if (dpy)
+ 			close(ConnectionNumber(dpy));
+-- 
+2.31.1
+
